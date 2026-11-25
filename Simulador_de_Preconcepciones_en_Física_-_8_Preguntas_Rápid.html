@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="tool">
+  <meta name="design-style" content="carbon">
+  <title>Diagnóstico PAES Física — Preconcepciones en Cinemática y Dinámica</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Page and surfaces (Carbon) */
+      --background: #ffffff;
+      --surface-container-low: #f4f4f4;
+      --surface-container: #f4f4f4;
+      --surface-container-high: #e0e0e0;
+
+      /* Ink */
+      --on-surface: #161616;
+      --on-surface-variant: #525252;
+
+      /* Rules */
+      --outline: #8d8d8d;
+      --outline-variant: #e0e0e0;
+
+      /* Accents */
+      --primary: #0f62fe;
+      --on-primary: #ffffff;
+      --primary-container: #d0e2ff;
+      --on-primary-container: #161616;
+      --primary-hover: #0353e9;
+      --secondary: #6f6f6f;
+      --tertiary: #198038;
+      --tertiary-container: #defbe6;
+      --error: #da1e28;
+      --error-container: #fff1f1;
+      --on-error: #ffffff;
+
+      /* Data series */
+      --data-1: #0f62fe;
+      --data-2: #6929c4;
+      --data-3: #005d5d;
+      --data-4: #9f1853;
+      --data-context: #8d8d8d;
+
+      /* Fonts */
+      --font-headline: 'IBM Plex Sans', sans-serif;
+      --font-body: 'IBM Plex Sans', sans-serif;
+      --font-label: 'IBM Plex Mono', monospace;
+
+      /* Shape */
+      --rounded: 0.125rem;
+      --rounded-lg: 0.25rem;
+      --rounded-full: 0.75rem;
+
+      /* Effects */
+      --shadow-1: 0 2px 6px rgb(0 0 0 / 0.1);
+      --shadow-2: 0 4px 12px rgb(0 0 0 / 0.12);
+      --rule: 1px solid var(--outline-variant);
+      --field-rule: 1px solid var(--outline);
+      --indicator: 2px solid var(--primary);
+
+      /* Shared tokens */
+      --positive: #198038;
+      --warning: #8e6a00;
+      --warning-container: #fcf4d6;
+      --focus: #0f62fe;
+
+      /* Type scale (Focused Tool) */
+      --display-size: clamp(1.5rem, 1.25rem + 1.1vw, 2.125rem);
+      --headline-size: clamp(1.2rem, 1.05rem + 0.65vw, 1.55rem);
+      --subhead-size: clamp(1.0625rem, 1rem + 0.25vw, 1.2rem);
+      --body-size: clamp(0.95rem, 0.92rem + 0.2vw, 1.0625rem);
+      --label-size: 0.75rem;
+
+      /* Spacing scale (4pt base) */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+    }
+
+    body.xl-mode {
+      --headline-size: clamp(1.45rem, 1.25rem + 0.9vw, 1.9rem);
+      --subhead-size: clamp(1.15rem, 1.05rem + 0.4vw, 1.35rem);
+      --body-size: clamp(1.0625rem, 1rem + 0.35vw, 1.2rem);
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { overflow-x: clip; margin: 0; padding: 0; }
+    header { position: static !important; }
+
+    body {
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.5;
+      color: var(--on-surface);
+      background: var(--background);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+    }
+
+    .page-grid {
+      display: grid;
+      gap: var(--space-lg);
+      padding: var(--space-lg);
+      max-width: 1280px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .page-grid * { min-width: 0; }
+
+    /* Focus visibility */
+    :focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Header */
+    .app-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: var(--space-md);
+      padding-bottom: var(--space-md);
+      border-bottom: var(--rule);
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .mono-kicker {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--on-surface-variant);
+      margin: 0;
+    }
+
+    .app-title {
+      font-family: var(--font-headline);
+      font-size: var(--display-size);
+      font-weight: 300;
+      line-height: 1.15;
+      margin: 0;
+      color: var(--on-surface);
+    }
+    .app-title strong {
+      font-weight: 600;
+    }
+
+    .header-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      background: var(--surface-container);
+      padding: var(--space-sm) var(--space-md);
+      min-height: 44px;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface);
+    }
+    .stat-pill strong {
+      font-weight: 600;
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Buttons (Carbon) */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-lg);
+      border: 1px solid transparent;
+      border-radius: 0;
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  color var(--dur-micro) var(--ease-out),
+                  border-color var(--dur-micro) var(--ease-out);
+      text-align: left;
+    }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: var(--background);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+    }
+
+    .btn-ghost {
+      background: var(--surface-container);
+      color: var(--on-surface);
+      border-color: var(--outline-variant);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      background: var(--surface-container-high);
+    }
+
+    .btn-danger-armed {
+      background: var(--error);
+      color: var(--on-error);
+      border-color: var(--error);
+    }
+
+    /* Question Navigation Strip */
+    .nav-strip {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: var(--space-xs);
+      border-bottom: var(--rule);
+      padding-bottom: var(--space-sm);
+    }
+
+    .nav-tab {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      min-height: 48px;
+      padding: var(--space-sm) var(--space-sm);
+      background: var(--surface-container);
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      text-align: left;
+      color: var(--on-surface-variant);
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  color var(--dur-micro) var(--ease-out);
+    }
+    .nav-tab:hover {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+    }
+    .nav-tab.is-active {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      border-bottom: var(--indicator);
+    }
+
+    .nav-tab-top {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+
+    .nav-tab-label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      line-height: 1.25;
+      color: inherit;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--outline);
+      flex-shrink: 0;
+    }
+    .status-dot.is-voted {
+      background: var(--primary);
+    }
+    .status-dot.is-revealed {
+      background: var(--tertiary);
+    }
+
+    /* Main Stage Grid */
+    .stage-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+
+    /* Left Column: Question & Voting */
+    .question-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      background: var(--surface-container);
+      padding: var(--space-lg);
+    }
+
+    .question-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-sm);
+      padding-bottom: var(--space-sm);
+      border-bottom: var(--rule);
+    }
+
+    .topic-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px var(--space-sm);
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      border-radius: var(--rounded-full);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .question-text {
+      font-family: var(--font-headline);
+      font-size: var(--headline-size);
+      font-weight: 600;
+      line-height: 1.28;
+      margin: 0;
+      color: var(--on-surface);
+      max-width: 65ch;
+    }
+
+    .poll-hint {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.85rem;
+      color: var(--on-surface-variant);
+    }
+
+    /* Options List */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .option-row {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: var(--space-md);
+      min-height: 56px;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--background);
+      border: 1px solid var(--outline-variant);
+      border-left: 4px solid transparent;
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out),
+                  border-color var(--dur-micro) var(--ease-out);
+      overflow: hidden;
+    }
+
+    .option-row:hover {
+      background: var(--surface-container-high);
+    }
+
+    .option-row.is-selected {
+      border-color: var(--primary);
+      border-left: 4px solid var(--primary);
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+    }
+
+    .option-row.is-correct {
+      border-color: var(--tertiary);
+      border-left: 4px solid var(--tertiary);
+      background: var(--tertiary-container);
+      color: var(--on-surface);
+    }
+
+    .option-row.is-wrong-picked {
+      border-color: var(--error);
+      border-left: 4px solid var(--error);
+      background: var(--error-container);
+      color: var(--on-surface);
+    }
+
+    .option-row.is-dimmed {
+      opacity: 0.65;
+    }
+
+    .vote-fill-bar {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0%;
+      background: var(--primary-container);
+      opacity: 0.55;
+      pointer-events: none;
+      transition: width var(--dur-short) var(--ease-out);
+      z-index: 0;
+    }
+    .option-row.is-correct .vote-fill-bar {
+      background: var(--tertiary-container);
+      opacity: 0.7;
+    }
+
+    .option-letter {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+      font-family: var(--font-label);
+      font-size: 0.9rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .option-row.is-selected .option-letter {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+    .option-row.is-correct .option-letter {
+      background: var(--tertiary);
+      color: var(--on-primary);
+    }
+    .option-row.is-wrong-picked .option-letter {
+      background: var(--error);
+      color: var(--on-error);
+    }
+
+    .option-body {
+      position: relative;
+      z-index: 1;
+      font-size: var(--body-size);
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--on-surface);
+    }
+
+    .option-badge {
+      display: inline-block;
+      margin-left: var(--space-sm);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .option-badge--ok { color: var(--tertiary); }
+    .option-badge--err { color: var(--error); }
+
+    /* Live Vote Stepper */
+    .vote-stepper {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--background);
+      border: 1px solid var(--outline-variant);
+      padding: 2px;
+    }
+
+    .step-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border: none;
+      background: var(--surface-container);
+      color: var(--on-surface);
+      font-family: var(--font-label);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .step-btn:hover {
+      background: var(--surface-container-high);
+    }
+
+    .vote-count {
+      min-width: 44px;
+      text-align: center;
+      font-family: var(--font-label);
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--on-surface);
+      padding: 0 4px;
+    }
+
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-sm);
+      padding-top: var(--space-sm);
+      border-top: var(--rule);
+    }
+
+    .action-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+
+    /* Right Column: Diagram + Diagnosis */
+    .analysis-column {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .diagram-card {
+      background: var(--surface-container);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .diagram-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: var(--rule);
+      padding-bottom: var(--space-xs);
+    }
+
+    .diagram-stage {
+      background: var(--background);
+      border: 1px solid var(--outline-variant);
+      min-height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-sm);
+    }
+
+    .diagram-stage svg {
+      width: 100%;
+      height: auto;
+      max-height: 270px;
+      display: block;
+    }
+
+    /* Diagnosis Cards (Carbon Notifications) */
+    .diagnosis-placeholder {
+      background: var(--surface-container);
+      border-left: 3px solid var(--outline);
+      padding: var(--space-lg);
+      color: var(--on-surface-variant);
+    }
+    .diagnosis-placeholder strong {
+      display: block;
+      color: var(--on-surface);
+      margin-bottom: var(--space-xs);
+    }
+
+    .diagnosis-stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+      animation: fadeSlideIn var(--dur-short) var(--ease-out);
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .callout-card {
+      background: var(--surface-container);
+      padding: var(--space-md) var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+    .callout-card--physics {
+      border-left: 4px solid var(--tertiary);
+    }
+    .callout-card--trap {
+      border-left: 4px solid var(--error);
+    }
+
+    .callout-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0;
+    }
+    .callout-title--physics { color: var(--tertiary); }
+    .callout-title--trap { color: var(--error); }
+
+    .callout-text {
+      margin: 0;
+      font-size: var(--body-size);
+      line-height: 1.55;
+      color: var(--on-surface);
+      max-width: 65ch;
+    }
+
+    .formula-box {
+      margin-top: var(--space-xs);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--background);
+      border: 1px solid var(--outline-variant);
+      font-family: var(--font-label);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--on-surface);
+    }
+
+    /* Keyboard Shortcuts Bar */
+    .shortcut-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--surface-container);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+    }
+    .kbd {
+      display: inline-block;
+      padding: 1px 6px;
+      background: var(--background);
+      border: 1px solid var(--outline);
+      color: var(--on-surface);
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    /* Session Summary Matrix below fold */
+    .summary-section {
+      border-top: var(--rule);
+      padding-top: var(--space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-sm);
+      border-bottom: var(--rule);
+      padding-bottom: var(--space-sm);
+    }
+
+    .section-title {
+      font-family: var(--font-headline);
+      font-size: var(--subhead-size);
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .summary-table-wrap {
+      overflow-x: auto;
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .summary-table th {
+      background: var(--surface-container-high);
+      color: var(--on-surface);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-align: left;
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--rule);
+    }
+    .summary-table td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: var(--rule);
+      vertical-align: top;
+      color: var(--on-surface);
+    }
+    .summary-table tbody tr:nth-child(even) {
+      background: var(--surface-container-low);
+    }
+    .summary-table tbody tr.is-current-row {
+      background: var(--primary-container);
+    }
+    .num-col {
+      font-family: var(--font-label);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .jump-link {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--primary);
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      font-size: inherit;
+    }
+    .jump-link:hover {
+      text-decoration: underline;
+    }
+
+    .source-footer {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      padding-top: var(--space-sm);
+      border-top: var(--rule);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 960px) {
+      .stage-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-strip {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-grid {
+        padding: var(--space-md);
+        gap: var(--space-md);
+      }
+      .nav-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .question-panel {
+        padding: var(--space-md);
+      }
+      .option-row {
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: var(--space-sm);
+      }
+      .vote-stepper {
+        grid-column: 1 / -1;
+        justify-self: end;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-grid">
+    <header class="app-header">
+      <div class="brand-block">
+        <p class="mono-kicker">PAES Ciencias · Física · Mecánica en Vivo</p>
+        <h1 class="app-title">Diagnóstico de <strong>Preconcepciones</strong> en Cinemática y Dinámica</h1>
+      </div>
+      <div class="header-controls">
+        <div class="stat-pill" aria-live="polite">
+          <span>Reveladas</span>
+          <strong id="progress-count">0 / 8</strong>
+        </div>
+        <button type="button" id="btn-xl-toggle" class="btn btn-ghost" onclick="toggleXlMode()" aria-pressed="false">
+          Texto Proyector: Normal
+        </button>
+        <button type="button" id="btn-reset-all" class="btn btn-ghost" onclick="handleResetAll(this)">
+          Reiniciar clase
+        </button>
+      </div>
+    </header>
+
+    <nav class="nav-strip" id="nav-strip" aria-label="Navegación de preguntas"></nav>
+
+    <section class="stage-grid" aria-live="polite">
+      <!-- Left: Question & Live Voting -->
+      <article class="question-panel">
+        <div class="question-meta">
+          <span class="mono-kicker" id="q-counter">PREGUNTA 01 / 08</span>
+          <span class="topic-tag" id="q-topic">Fuerza vs. velocidad</span>
+        </div>
+
+        <h2 class="question-text" id="q-prompt"></h2>
+
+        <div class="poll-hint">
+          <span>Haz clic en una opción para marcar la elección, o usa <strong>+ / −</strong> para contar votos del curso.</span>
+          <span class="num-col" id="q-total-votes">0 votos</span>
+        </div>
+
+        <div class="options-list" id="options-list" role="radiogroup" aria-labelledby="q-prompt"></div>
+
+        <div class="action-bar">
+          <div class="action-group">
+            <button type="button" id="btn-reveal" class="btn btn-primary" onclick="toggleReveal()">
+              Revelar respuesta y trampa
+            </button>
+            <button type="button" class="btn btn-ghost" onclick="clearCurrentVotes()">
+              Limpiar pregunta
+            </button>
+          </div>
+          <div class="action-group">
+            <button type="button" id="btn-prev" class="btn btn-secondary" onclick="stepQuestion(-1)">
+              ← Anterior
+            </button>
+            <button type="button" id="btn-next" class="btn btn-secondary" onclick="stepQuestion(1)">
+              Siguiente →
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Right: Visual Diagram & Post-Reveal Explanation -->
+      <aside class="analysis-column">
+        <div class="diagram-card">
+          <div class="diagram-header">
+            <span class="mono-kicker" id="diagram-kicker">ESQUEMA DE SITUACIÓN</span>
+            <span class="mono-kicker" id="diagram-status">SIN REVELAR</span>
+          </div>
+          <div class="diagram-stage" id="diagram-stage"></div>
+        </div>
+
+        <div id="diagnosis-container"></div>
+      </aside>
+    </section>
+
+    <div class="shortcut-bar" aria-label="Atajos de teclado para proyección">
+      <span><span class="kbd">A</span><span class="kbd">B</span><span class="kbd">C</span><span class="kbd">D</span> Seleccionar opción</span>
+      <span><span class="kbd">1</span>–<span class="kbd">4</span> Sumar voto (+1)</span>
+      <span><span class="kbd">R</span> o <span class="kbd">Espacio</span> Revelar / ocultar respuesta</span>
+      <span><span class="kbd">←</span> <span class="kbd">→</span> Cambiar pregunta</span>
+    </div>
+
+    <section class="summary-section">
+      <div class="section-head">
+        <h3 class="section-title">Mapa de sesión — 8 preconcepciones clave</h3>
+        <span class="mono-kicker">Haz clic en cualquier fila para proyectar</span>
+      </div>
+      <div class="summary-table-wrap">
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Concepto evaluado</th>
+              <th>La trampa intuitiva</th>
+              <th>Votos</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="summary-tbody"></tbody>
+        </table>
+      </div>
+      <footer class="source-footer">
+        Basado en temario y preguntas oficiales PAES Ciencias Física (DEMRE 2026–2027), Mecánica de Halliday &amp; Resnick, Physics (OpenStax) y guías de Dinámica y Cinemática PAES.
+      </footer>
+    </section>
+  </main>
+
+  <api-shim></api-shim>
+  <script>
+    const QUESTIONS = [
+      {
+        id: 1,
+        shortTitle: `Moneda en alto`,
+        topic: `Fuerza vs. velocidad`,
+        prompt: `Se lanza una moneda verticalmente hacia arriba (sin roce con el aire). Justo en el instante en que alcanza su altura máxima, ¿cómo son su velocidad y la fuerza neta sobre ella?`,
+        options: [
+          `Velocidad nula y fuerza neta nula, porque se detuvo en lo más alto.`,
+          `Velocidad nula y fuerza neta distinta de cero, apuntando hacia abajo.`,
+          `Velocidad hacia arriba y fuerza neta hacia arriba por el impulso inicial.`,
+          `Velocidad nula y fuerza neta hacia arriba que comienza a frenarla.`
+        ],
+        correctIndex: 1,
+        explanation: `En la altura máxima la moneda se detiene solo un instante (v = 0 m/s), pero la Tierra no deja de atraerla. Sin roce del aire, la única fuerza que actúa durante todo el vuelo es su peso P = m·g hacia abajo. Por la 2.ª Ley de Newton, la aceleración sigue siendo g ≈ 10 m/s² hacia abajo; si la fuerza neta fuera cero, la moneda quedaría flotando indefinidamente.`,
+        formula: `F_neta = P = m·g (↓)  ⇒  a = g ≈ 10 m/s² (↓), aunque v = 0 en h_máx`,
+        trapTitle: `Preconcepción: "Si v = 0, entonces F = 0" (teoría del ímpetu)`,
+        trap: `Intuitivamente se asocia movimiento con fuerza (creer que "sube con una fuerza hacia arriba que se agota en la cima"). En física, la fuerza no determina la velocidad, sino el cambio de velocidad (aceleración).`
+      },
+      {
+        id: 2,
+        shortTitle: `Vacío: bola vs pluma`,
+        topic: `Caída libre e inercia`,
+        prompt: `Dentro de una cámara sin aire (vacío), se sueltan simultáneamente desde la misma altura una bola de bolos de 6 kg y una pluma de 0,01 kg. ¿Cuál llega primero al suelo y por qué?`,
+        options: [
+          `La bola de bolos, porque la Tierra la atrae con una fuerza peso 600 veces mayor.`,
+          `Llegan al mismo tiempo, porque en el vacío la fuerza peso es igual para todos los cuerpos.`,
+          `Llegan al mismo tiempo, porque aunque la bola tiene mayor peso, también tiene mayor inercia (a = P/m = g).`,
+          `La pluma tarda más porque la gravedad actúa con menos intensidad sobre los objetos livianos.`
+        ],
+        correctIndex: 2,
+        explanation: `La fuerza gravitacional sobre la bola (60 N) es efectivamente 600 veces mayor que sobre la pluma (0,1 N), pero su masa inercial también es 600 veces mayor (6 kg vs. 0,01 kg). Al dividir fuerza por masa, las masas se cancelan: ambos cuerpos caen con la misma aceleración g ≈ 10 m/s² y recorren la misma altura en igual tiempo.`,
+        formula: `a = F_neta / m = (m·g) / m = g ≈ 10 m/s²  (independiente de m)`,
+        trapTitle: `Preconcepción: "Más pesado = cae más rápido" (confundir peso con aceleración)`,
+        trap: `En el aire cotidiano, el roce frena mucho más a la pluma por su forma y baja densidad. Además, la opción B es un distractor clásico PAES: caen juntas, pero NO porque tengan igual peso, sino igual aceleración.`
+      },
+      {
+        id: 3,
+        shortTitle: `Normal de maleta`,
+        topic: `Fuerza normal reactiva`,
+        prompt: `Una maleta de 15 kg (peso P = 150 N) descansa sobre el piso horizontal. Una persona tira de la manilla verticalmente hacia arriba con una fuerza de 40 N, sin despegarla del suelo. ¿Cuánto vale la fuerza normal (N) del piso?`,
+        options: [
+          `150 N, porque en una superficie horizontal la normal siempre es igual al peso.`,
+          `110 N, porque el tirón hacia arriba alivia parte de la carga que sostiene el piso.`,
+          `190 N, porque a la reacción del piso se le suma la fuerza aplicada.`,
+          `40 N, porque la normal reacciona únicamente a la fuerza que ejerce la persona.`
+        ],
+        correctIndex: 1,
+        explanation: `La maleta permanece en equilibrio vertical (a_y = 0), por lo que la suma de fuerzas hacia arriba iguala al peso hacia abajo: N + F_tirón = P. Despejando, N = 150 N − 40 N = 110 N. La fuerza normal es una fuerza de vínculo reactiva: el piso solo empuja lo necesario para sostener lo que la mano no está levantando.`,
+        formula: `∑F_y = 0  ⇒  N + 40 N − 150 N = 0  ⇒  N = 110 N`,
+        trapTitle: `Preconcepción: "En plano horizontal, N = P siempre"`,
+        trap: `Muchos estudiantes memorizan la fórmula N = m·g de memoria sin construir el Diagrama de Cuerpo Libre (DCL). Esa igualdad solo vale cuando no hay inclinación ni otras fuerzas verticales o aceleración vertical.`
+      },
+      {
+        id: 4,
+        shortTitle: `Choque camión-auto`,
+        topic: `3.ª Ley: masas distintas`,
+        prompt: `Un camión de 10 000 kg choca de frente contra un automóvil compacto de 1 000 kg. Durante el instante del impacto, ¿qué relación existe entre las fuerzas que se ejercen mutuamente?`,
+        options: [
+          `El camión ejerce una fuerza 10 veces mayor sobre el auto, por tener 10 veces más masa.`,
+          `El camión ejerce mayor fuerza solo si venía con mayor rapidez antes de chocar.`,
+          `Ambos se ejercen fuerzas de igual magnitud y sentidos opuestos; el auto sufre mayor aceleración.`,
+          `El auto casi no ejerce fuerza sobre el camión porque sale rebotado hacia atrás.`
+        ],
+        correctIndex: 2,
+        explanation: `Por la 3.ª Ley de Newton (Principio de Acción y Reacción), la fuerza que el camión ejerce sobre el auto y la que el auto ejerce sobre el camión tienen exactamente la misma magnitud en todo instante (|F_C/A| = |F_A/C|). La enorme diferencia en los daños se debe a la 2.ª Ley: con igual fuerza F, el auto de menor masa experimenta una aceleración 10 veces más brusca (a = F/m).`,
+        formula: `|F_camión→auto| = |F_auto→camión| = F  |  a_auto = F / 1000 = 10 · a_camión`,
+        trapTitle: `Preconcepción: "El más grande o rápido ejerce más fuerza"`,
+        trap: `Se confunde la fuerza de interacción (siempre simétrica en módulo) con su efecto cinemático (Δv y aceleración). Que el auto se deforme o salga despedido no implica que recibió una fuerza mayor.`
+      },
+      {
+        id: 5,
+        shortTitle: `Caballo y carreta`,
+        topic: `Pares en cuerpos distintos`,
+        prompt: `Un caballo tira de una carreta hacia adelante. Por acción y reacción, la carreta tira del caballo hacia atrás con una fuerza de igual magnitud. ¿Por qué el sistema logra acelerar hacia adelante y no se anulan esas fuerzas?`,
+        options: [
+          `Porque la fuerza del caballo termina siendo levemente mayor que la de la carreta.`,
+          `Porque actúan sobre cuerpos diferentes, por lo que no se suman en el mismo DCL.`,
+          `Porque la 3.ª Ley de Newton deja de cumplirse cuando los cuerpos aceleran.`,
+          `Porque el peso de la carreta compensa la fuerza de reacción hacia atrás.`
+        ],
+        correctIndex: 1,
+        explanation: `Un par acción-reacción jamás puede anularse entre sí porque cada fuerza actúa sobre un cuerpo distinto. Para saber si la carreta acelera, solo sumamos las fuerzas sobre la carreta (el tirón T hacia adelante supera al roce en sus ruedas). El caballo acelera porque el empuje del suelo sobre sus cascos supera al tirón −T de la carreta.`,
+        formula: `DCL Carreta: F_neta = T − f_roce > 0   |   DCL Caballo: F_neta = F_suelo − T > 0`,
+        trapTitle: `Preconcepción: "Fuerzas iguales y opuestas siempre se anulan"`,
+        trap: `Los estudiantes suman F + (−F) = 0 sin verificar la condición fundamental: solo se suman fuerzas aplicadas sobre el MISMO cuerpo. (También suele confundirse peso y normal de un mismo objeto como si fueran par acción-reacción).`
+      },
+      {
+        id: 6,
+        shortTitle: `Roce al caminar`,
+        topic: `Roce estático motriz`,
+        prompt: `Una persona camina acelerando hacia la derecha sobre una vereda rugosa, sin que sus zapatos resbalen. ¿Qué fuerza externa horizontal la impulsa hacia la derecha y qué tipo de fuerza es?`,
+        options: [
+          `El roce cinético del suelo apuntando hacia la izquierda, oponiéndose al movimiento.`,
+          `La fuerza interna de los músculos de la pierna, sin participación del suelo.`,
+          `El roce estático que ejerce el suelo sobre la suela, apuntando hacia la derecha.`,
+          `La fuerza normal de la vereda, dirigida diagonalmente hacia adelante.`
+        ],
+        correctIndex: 2,
+        explanation: `Al dar el paso, el pie empuja el suelo hacia atrás (izquierda). Como la suela no desliza sobre el pavimento, el suelo reacciona ejerciendo una fuerza de roce estático sobre el zapato hacia adelante (derecha). Esa fuerza externa es la que acelera al cuerpo hacia la derecha; sobre hielo sin roce, el pie resbalaría hacia atrás sin avanzar.`,
+        formula: `Pie → suelo (←)  ⇒  Roce estático f_e suelo → pie (→) = fuerza motriz externa`,
+        trapTitle: `Preconcepción: "El roce siempre frena y apunta en contra del movimiento"`,
+        trap: `El roce se opone al DESLIZAMIENTO relativo entre las superficies en contacto, no necesariamente al movimiento del centro de masa. Al caminar o acelerar un auto, la superficie de contacto intenta ir hacia atrás, por eso el roce apunta hacia adelante.`
+      },
+      {
+        id: 7,
+        shortTitle: `Gráfico v(t) cruzando 0`,
+        topic: `Cinemática gráfica v(t)`,
+        prompt: `El gráfico v(t) es una recta continua que baja desde v = +20 m/s (t = 0 s), cruza el eje horizontal en t = 4 s (v = 0) y llega a v = −10 m/s (t = 6 s). ¿Qué ocurre exactamente en t = 4 s?`,
+        options: [
+          `El móvil regresa a su posición inicial de partida (x = 0).`,
+          `La aceleración del móvil se anula en ese instante.`,
+          `El móvil se detiene un instante e invierte su sentido de movimiento, con aceleración constante.`,
+          `La aceleración cambia de positiva a negativa al cruzar el eje.`
+        ],
+        correctIndex: 2,
+        explanation: `En un gráfico v(t), la pendiente representa la aceleración: como es una única línea recta, la aceleración es constante y negativa en todo el tramo (a = −30 / 6 = −5 m/s²), incluso en t = 4 s. El cruce por v = 0 indica el instante en que el móvil deja de avanzar (+), se detiene momentáneamente y comienza a retroceder (−), alcanzando ahí su máximo alejamiento (+40 m).`,
+        formula: `a = pendiente = Δv / Δt = −5 m/s² (constante)  |  Δx(0→4 s) = área = +40 m`,
+        trapTitle: `Preconcepción: "Confundir v(t) con x(t), o creer que v = 0 implica a = 0"`,
+        trap: `Es muy común leer la línea descendente como "está volviendo al origen y en t = 4 llega a casa", o pensar que si la velocidad es cero en ese punto la aceleración también debe ser cero.`
+      },
+      {
+        id: 8,
+        shortTitle: `Roce bajo el umbral`,
+        topic: `Roce estático reactivo`,
+        prompt: `Una caja de 10 kg (N = 100 N) reposa en un piso con coeficiente de roce estático μ_e = 0,5 (roce estático máximo = 50 N). Si se empuja horizontalmente con 30 N, ¿cuánto vale la fuerza de roce sobre la caja?`,
+        options: [
+          `50 N, porque se calcula directamente como f_e = μ_e · N = 0,5 · 100 N.`,
+          `30 N, porque la caja sigue en reposo y el roce estático iguala a la fuerza aplicada.`,
+          `20 N, que corresponde a la diferencia entre el máximo posible y el empuje.`,
+          `0 N, porque el roce solo aparece cuando la caja logra ponerse en movimiento.`
+        ],
+        correctIndex: 1,
+        explanation: `La expresión μ_e·N entrega únicamente el valor MÁXIMO (umbral = 50 N) que puede alcanzar el roce estático antes de romperse el reposo. Como el empuje (30 N) es menor que 50 N, la caja permanece en equilibrio (F_neta = 0), por lo que el roce estático se ajusta exactamente a 30 N en sentido contrario.`,
+        formula: `f_e ≤ μ_e · N = 50 N   |   Como F = 30 N < 50 N  ⇒  reposo  ⇒  f_e = 30 N`,
+        trapTitle: `Preconcepción: "Aplicar f_e = μ_e·N como igualdad fija"`,
+        trap: `Si el roce valiera 50 N hacia atrás cuando empujas con 30 N hacia adelante, ¡la caja aceleraría sola hacia atrás! El roce estático es una fuerza reactiva variable: va desde 0 hasta μ_e·N según la fuerza aplicada.`
+      }
+    ];
+
+    const LETTERS = ['A', 'B', 'C', 'D'];
+
+    let state = {
+      currentIndex: 0,
+      xlMode: false,
+      selected: {},
+      revealed: {},
+      votes: {}
+    };
+
+    function ensureQuestionBucket(qId) {
+      if (!state.votes[qId]) {
+        state.votes[qId] = [0, 0, 0, 0];
+      }
+    }
+
+    async function persistState() {
+      if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === 'function') {
+        try {
+          await window.notebookAppApi.setAppState(state);
+        } catch (err) {
+          /* silent fallback if host rejects transient write */
+        }
+      }
+    }
+
+    function selectQuestion(index) {
+      if (index < 0 || index >= QUESTIONS.length) return;
+      state.currentIndex = index;
+      renderAll();
+      persistState();
+    }
+
+    function stepQuestion(delta) {
+      const next = state.currentIndex + delta;
+      if (next >= 0 && next < QUESTIONS.length) {
+        selectQuestion(next);
+      }
+    }
+
+    function selectOption(optIdx) {
+      const q = QUESTIONS[state.currentIndex];
+      if (!q) return;
+      if (state.selected[q.id] === optIdx) {
+        delete state.selected[q.id];
+      } else {
+        state.selected[q.id] = optIdx;
+      }
+      renderAll();
+      persistState();
+    }
+
+    function adjustVote(event, optIdx, delta) {
+      if (event) event.stopPropagation();
+      const q = QUESTIONS[state.currentIndex];
+      if (!q) return;
+      ensureQuestionBucket(q.id);
+      const nextVal = Math.max(0, state.votes[q.id][optIdx] + delta);
+      state.votes[q.id][optIdx] = nextVal;
+      renderAll();
+      persistState();
+    }
+
+    function toggleReveal() {
+      const q = QUESTIONS[state.currentIndex];
+      if (!q) return;
+      state.revealed[q.id] = !state.revealed[q.id];
+      renderAll();
+      persistState();
+    }
+
+    function clearCurrentVotes() {
+      const q = QUESTIONS[state.currentIndex];
+      if (!q) return;
+      state.votes[q.id] = [0, 0, 0, 0];
+      delete state.selected[q.id];
+      delete state.revealed[q.id];
+      renderAll();
+      persistState();
+    }
+
+    function toggleXlMode() {
+      state.xlMode = !state.xlMode;
+      applyXlMode();
+      persistState();
+    }
+
+    function applyXlMode() {
+      const btn = document.getElementById('btn-xl-toggle');
+      if (state.xlMode) {
+        document.body.classList.add('xl-mode');
+        if (btn) {
+          btn.textContent = 'Texto Proyector: XL';
+          btn.setAttribute('aria-pressed', 'true');
+        }
+      } else {
+        document.body.classList.remove('xl-mode');
+        if (btn) {
+          btn.textContent = 'Texto Proyector: Normal';
+          btn.setAttribute('aria-pressed', 'false');
+        }
+      }
+    }
+
+    function handleResetAll(btn) {
+      if (!btn) return;
+      if (btn.dataset.armed !== 'true') {
+        btn.dataset.armed = 'true';
+        btn.classList.remove('btn-ghost');
+        btn.classList.add('btn-danger-armed');
+        btn.textContent = 'Confirmar reinicio';
+        setTimeout(function() {
+          if (btn.dataset.armed === 'true') {
+            btn.dataset.armed = 'false';
+            btn.classList.remove('btn-danger-armed');
+            btn.classList.add('btn-ghost');
+            btn.textContent = 'Reiniciar clase';
+          }
+        }, 3500);
+        return;
+      }
+      btn.dataset.armed = 'false';
+      btn.classList.remove('btn-danger-armed');
+      btn.classList.add('btn-ghost');
+      btn.textContent = 'Reiniciar clase';
+      state.currentIndex = 0;
+      state.selected = {};
+      state.revealed = {};
+      state.votes = {};
+      renderAll();
+      persistState();
+    }
+
+    function getTotalVotes(qId) {
+      const arr = state.votes[qId];
+      if (!arr) return 0;
+      return arr[0] + arr[1] + arr[2] + arr[3];
+    }
+
+    function renderDiagramSVG(qId, isRevealed) {
+      const C_INK = 'var(--on-surface)';
+      const C_MUTED = 'var(--on-surface-variant)';
+      const C_GRID = 'var(--outline-variant)';
+      const C_BLUE = 'var(--primary)';
+      const C_GREEN = 'var(--tertiary)';
+      const C_RED = 'var(--error)';
+      const C_BG = 'var(--background)';
+      const C_SURF = 'var(--surface-container)';
+
+      const defs = `
+        <defs>
+          <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="${C_BLUE}"/>
+          </marker>
+          <marker id="arr-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="${C_RED}"/>
+          </marker>
+          <marker id="arr-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="${C_GREEN}"/>
+          </marker>
+          <marker id="arr-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="${C_MUTED}"/>
+          </marker>
+        </defs>
+      `;
+
+      if (qId === 1) {
+        return `<svg viewBox="0 0 460 260" role="img" aria-label="Esquema de moneda en altura máxima">
+          ${defs}
+          <line x1="40" y1="228" x2="420" y2="228" stroke="${C_INK}" stroke-width="2"/>
+          <line x1="90" y1="54" x2="340" y2="54" stroke="${C_GRID}" stroke-width="1.5" stroke-dasharray="5 5"/>
+          <text x="52" y="58" font-family="IBM Plex Mono, monospace" font-size="12" fill="${C_MUTED}">h máx</text>
+          <path d="M 185 220 L 185 75" stroke="${C_MUTED}" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arr-muted)"/>
+          <path d="M 245 75 L 245 215" stroke="${C_GRID}" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#arr-muted)"/>
+          <circle cx="215" cy="54" r="17" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2.5"/>
+          <text x="215" y="59" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_INK}">$</text>
+          ${!isRevealed ? `
+            <rect x="260" y="34" width="150" height="44" fill="${C_SURF}" stroke="${C_INK}" stroke-width="1.5"/>
+            <text x="335" y="53" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_INK}">v = ?   F_neta = ?</text>
+            <text x="335" y="70" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${C_MUTED}">Sin roce del aire</text>
+          ` : `
+            <line x1="215" y1="73" x2="215" y2="152" stroke="${C_RED}" stroke-width="4" marker-end="url(#arr-red)"/>
+            <rect x="255" y="24" width="175" height="32" fill="${C_BG}" stroke="${C_GREEN}" stroke-width="2"/>
+            <text x="342" y="45" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="${C_GREEN}">v = 0 m/s (instante)</text>
+            <rect x="235" y="96" width="195" height="46" fill="${C_BG}" stroke="${C_RED}" stroke-width="2"/>
+            <text x="332" y="116" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_RED}">F_neta = P = m·g (↓)</text>
+            <text x="332" y="134" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="${C_INK}">a = 10 m/s² hacia abajo</text>
+          `}
+        </svg>`;
+      }
+
+      if (qId === 2) {
+        return `<svg viewBox="0 0 460 260" role="img" aria-label="Cámara de vacío con bola de bolos y pluma">
+          ${defs}
+          <rect x="55" y="20" width="350" height="218" fill="${C_BG}" stroke="${C_INK}" stroke-width="2"/>
+          <text x="230" y="38" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_MUTED}">CÁMARA DE VACÍO · SIN AIRE</text>
+          <line x1="55" y1="218" x2="405" y2="218" stroke="${C_INK}" stroke-width="3"/>
+          <line x1="70" y1="68" x2="390" y2="68" stroke="${C_GRID}" stroke-width="1.5" stroke-dasharray="4 4"/>
+          ${!isRevealed ? `
+            <circle cx="155" cy="70" r="22" fill="${C_INK}"/>
+            <text x="155" y="114" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_INK}">Bola (6 kg)</text>
+            <path d="M 290 78 Q 315 56 340 62 Q 320 76 290 78 Z" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2"/>
+            <line x1="286" y1="80" x2="335" y2="64" stroke="${C_INK}" stroke-width="1.5"/>
+            <text x="315" y="114" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_INK}">Pluma (0,01 kg)</text>
+            <text x="230" y="176" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="600" fill="${C_BLUE}">¿Cuál toca primero el suelo?</text>
+          ` : `
+            <circle cx="155" cy="195" r="22" fill="${C_INK}"/>
+            <line x1="155" y1="100" x2="155" y2="165" stroke="${C_BLUE}" stroke-width="4" marker-end="url(#arr-blue)"/>
+            <text x="108" y="138" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_BLUE}">P = 60 N</text>
+            <path d="M 295 212 Q 320 190 345 196 Q 325 210 295 212 Z" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2"/>
+            <line x1="291" y1="214" x2="340" y2="198" stroke="${C_INK}" stroke-width="1.5"/>
+            <line x1="320" y1="155" x2="320" y2="184" stroke="${C_BLUE}" stroke-width="2" marker-end="url(#arr-blue)"/>
+            <text x="330" y="172" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_BLUE}">P = 0,1 N</text>
+            <rect x="85" y="52" width="290" height="36" fill="${C_BG}" stroke="${C_GREEN}" stroke-width="2"/>
+            <text x="230" y="75" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_GREEN}">a = P/m = 10 m/s² (igual tiempo)</text>
+          `}
+        </svg>`;
+      }
+
+      if (qId === 3) {
+        return `<svg viewBox="0 0 460 260" role="img" aria-label="DCL de maleta tirada verticalmente hacia arriba">
+          ${defs}
+          <line x1="40" y1="212" x2="420" y2="212" stroke="${C_INK}" stroke-width="3"/>
+          <rect x="135" y="132" width="110" height="78" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2.5"/>
+          <path d="M 172 132 L 172 114 L 208 114 L 208 132" fill="none" stroke="${C_INK}" stroke-width="2.5"/>
+          <text x="190" y="176" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="${C_INK}">15 kg</text>
+          <line x1="190" y1="112" x2="190" y2="48" stroke="${C_BLUE}" stroke-width="3.5" marker-end="url(#arr-blue)"/>
+          <text x="202" y="64" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="${C_BLUE}">F = 40 N ↑</text>
+          ${!isRevealed ? `
+            <line x1="190" y1="184" x2="190" y2="245" stroke="${C_INK}" stroke-width="3.5" marker-end="url(#arr-muted)"/>
+            <text x="204" y="242" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_INK}">P = 150 N ↓</text>
+            <rect x="290" y="130" width="145" height="46" fill="${C_BG}" stroke="${C_INK}" stroke-width="1.5"/>
+            <text x="362" y="150" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="${C_INK}">N = ? N</text>
+            <text x="362" y="168" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${C_MUTED}">En reposo sobre piso</text>
+          ` : `
+            <line x1="168" y1="210" x2="168" y2="112" stroke="${C_GREEN}" stroke-width="4" marker-end="url(#arr-green)"/>
+            <text x="154" y="122" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="${C_GREEN}">N = 110 N ↑</text>
+            <line x1="212" y1="175" x2="212" y2="248" stroke="${C_RED}" stroke-width="4" marker-end="url(#arr-red)"/>
+            <text x="224" y="242" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="${C_RED}">P = 150 N ↓</text>
+            <rect x="275" y="118" width="165" height="58" fill="${C_BG}" stroke="${C_GREEN}" stroke-width="2"/>
+            <text x="357" y="142" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_GREEN}">N + 40 = 150</text>
+            <text x="357" y="162" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="${C_INK}">N = 110 N</text>
+          `}
+        </svg>`;
+      }
+
+      if (qId === 4) {
+        return `<svg viewBox="0 0 460 260" role="img" aria-label="Colisión entre camión y automóvil">
+          ${defs}
+          <line x1="25" y1="180" x2="435" y2="180" stroke="${C_INK}" stroke-width="2.5"/>
+          <rect x="42" y="76" width="142" height="86" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2.5"/>
+          <rect x="184" y="104" width="38" height="58" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2.5"/>
+          <circle cx="74" cy="168" r="12" fill="${C_INK}"/>
+          <circle cx="198" cy="168" r="12" fill="${C_INK}"/>
+          <text x="114" y="118" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_INK}">10 000 kg</text>
+          <text x="114" y="136" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="${C_MUTED}">Camión</text>
+
+          <rect x="268" y="122" width="118" height="40" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2.5"/>
+          <rect x="296" y="100" width="60" height="22" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2.5"/>
+          <circle cx="294" cy="168" r="11" fill="${C_INK}"/>
+          <circle cx="362" cy="168" r="11" fill="${C_INK}"/>
+          <text x="327" y="147" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_INK}">1 000 kg</text>
+
+          <path d="M 235 88 L 245 108 L 235 128 L 245 148" fill="none" stroke="${C_RED}" stroke-width="2.5"/>
+          ${!isRevealed ? `
+            <text x="230" y="45" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="${C_BLUE}">¿Quién ejerce mayor fuerza en el choque?</text>
+            <line x1="120" y1="62" x2="180" y2="62" stroke="${C_MUTED}" stroke-width="2.5" marker-end="url(#arr-muted)"/>
+            <line x1="350" y1="62" x2="290" y2="62" stroke="${C_MUTED}" stroke-width="2.5" marker-end="url(#arr-muted)"/>
+          ` : `
+            <line x1="242" y1="52" x2="152" y2="52" stroke="${C_GREEN}" stroke-width="4" marker-end="url(#arr-green)"/>
+            <line x1="248" y1="52" x2="338" y2="52" stroke="${C_GREEN}" stroke-width="4" marker-end="url(#arr-green)"/>
+            <text x="245" y="34" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_GREEN}">|F_camión| = |F_auto| (3.ª Ley)</text>
+            <rect x="42" y="196" width="180" height="44" fill="${C_BG}" stroke="${C_INK}" stroke-width="1.5"/>
+            <text x="132" y="216" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="${C_INK}">a_camión = F / 10 000</text>
+            <text x="132" y="232" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${C_MUTED}">Aceleración menor</text>
+            <rect x="248" y="196" width="182" height="44" fill="${C_BG}" stroke="${C_RED}" stroke-width="2"/>
+            <text x="339" y="216" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_RED}">a_auto = 10 × a_camión</text>
+            <text x="339" y="232" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${C_INK}">Mayor cambio de velocidad</text>
+          `}
+        </svg>`;
+      }
+
+      if (qId === 5) {
+        return `<svg viewBox="0 0 460 260" role="img" aria-label="Separación de DCL de caballo y carreta">
+          ${defs}
+          <line x1="20" y1="204" x2="440" y2="204" stroke="${C_INK}" stroke-width="2.5"/>
+          <rect x="34" y="42" width="174" height="176" fill="none" stroke="${C_BLUE}" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <text x="121" y="60" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_BLUE}">SISTEMA 1: CARRETA</text>
+          <rect x="248" y="42" width="182" height="176" fill="none" stroke="${C_GREEN}" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <text x="339" y="60" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_GREEN}">SISTEMA 2: CABALLO</text>
+
+          <rect x="64" y="114" width="106" height="60" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2"/>
+          <circle cx="88" cy="188" r="14" fill="${C_BG}" stroke="${C_INK}" stroke-width="2.5"/>
+          <circle cx="146" cy="188" r="14" fill="${C_BG}" stroke="${C_INK}" stroke-width="2.5"/>
+          <text x="117" y="148" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="${C_INK}">Carreta</text>
+
+          <rect x="292" y="106" width="96" height="52" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2"/>
+          <line x1="306" y1="158" x2="306" y2="202" stroke="${C_INK}" stroke-width="3"/>
+          <line x1="374" y1="158" x2="374" y2="202" stroke="${C_INK}" stroke-width="3"/>
+          <text x="340" y="136" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="${C_INK}">Caballo</text>
+
+          <line x1="170" y1="138" x2="292" y2="138" stroke="${C_INK}" stroke-width="2.5"/>
+          ${!isRevealed ? `
+            <text x="230" y="240" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" fill="${C_INK}">T = −T en la cuerda · ¿Por qué acelera?</text>
+          ` : `
+            <line x1="170" y1="126" x2="225" y2="126" stroke="${C_BLUE}" stroke-width="3.5" marker-end="url(#arr-blue)"/>
+            <text x="196" y="118" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_BLUE}">+T</text>
+            <line x1="64" y1="154" x2="38" y2="154" stroke="${C_MUTED}" stroke-width="2.5" marker-end="url(#arr-muted)"/>
+            <text x="50" y="170" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="${C_MUTED}">roce</text>
+
+            <line x1="292" y1="126" x2="237" y2="126" stroke="${C_RED}" stroke-width="3.5" marker-end="url(#arr-red)"/>
+            <text x="266" y="118" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_RED}">−T</text>
+            <line x1="340" y1="196" x2="416" y2="196" stroke="${C_GREEN}" stroke-width="4" marker-end="url(#arr-green)"/>
+            <text x="378" y="186" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_GREEN}">F_suelo</text>
+            <text x="230" y="242" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_INK}">+T y −T actúan sobre cuerpos distintos</text>
+          `}
+        </svg>`;
+      }
+
+      if (qId === 6) {
+        return `<svg viewBox="0 0 460 260" role="img" aria-label="Roce estático al caminar">
+          ${defs}
+          <line x1="30" y1="192" x2="430" y2="192" stroke="${C_INK}" stroke-width="3"/>
+          <line x1="50" y1="202" x2="410" y2="202" stroke="${C_GRID}" stroke-width="2" stroke-dasharray="3 6"/>
+          <line x1="165" y1="36" x2="295" y2="36" stroke="${C_BLUE}" stroke-width="3" marker-end="url(#arr-blue)"/>
+          <text x="230" y="26" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_BLUE}">Aceleración y avance →</text>
+
+          <!-- Pierna y zapato -->
+          <path d="M 190 66 L 208 164 L 248 164 L 254 188 L 176 188 L 166 66 Z" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2.5"/>
+          <text x="210" y="132" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" font-weight="600" fill="${C_INK}">Zapato</text>
+          ${!isRevealed ? `
+            <rect x="275" y="148" width="145" height="38" fill="${C_BG}" stroke="${C_INK}" stroke-width="1.5"/>
+            <text x="347" y="172" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_INK}">f_roce = ? (← o →)</text>
+          ` : `
+            <line x1="210" y1="224" x2="105" y2="224" stroke="${C_MUTED}" stroke-width="2.5" stroke-dasharray="4 3" marker-end="url(#arr-muted)"/>
+            <text x="155" y="244" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="${C_MUTED}">Pie empuja suelo (←)</text>
+            <line x1="212" y1="186" x2="340" y2="186" stroke="${C_GREEN}" stroke-width="4.5" marker-end="url(#arr-green)"/>
+            <rect x="272" y="128" width="166" height="44" fill="${C_BG}" stroke="${C_GREEN}" stroke-width="2"/>
+            <text x="355" y="147" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_GREEN}">f_e suelo → pie (→)</text>
+            <text x="355" y="164" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${C_INK}">Roce estático impulsa</text>
+          `}
+        </svg>`;
+      }
+
+      if (qId === 7) {
+        return `<svg viewBox="0 0 460 260" role="img" aria-label="Gráfico velocidad versus tiempo con cambio de signo">
+          ${defs}
+          <!-- Grid -->
+          <line x1="75" y1="45" x2="395" y2="45" stroke="${C_GRID}" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="75" y1="100" x2="395" y2="100" stroke="${C_GRID}" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="75" y1="155" x2="405" y2="155" stroke="${C_INK}" stroke-width="2"/>
+          <line x1="75" y1="210" x2="395" y2="210" stroke="${C_GRID}" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="75" y1="30" x2="75" y2="225" stroke="${C_INK}" stroke-width="2"/>
+
+          <text x="66" y="49" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" fill="${C_MUTED}">+20</text>
+          <text x="66" y="104" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" fill="${C_MUTED}">+10</text>
+          <text x="66" y="159" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_INK}">0</text>
+          <text x="66" y="214" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="11" fill="${C_MUTED}">−10</text>
+          <text x="30" y="24" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_INK}">v [m/s]</text>
+          <text x="415" y="159" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_INK}">t [s]</text>
+
+          <text x="275" y="174" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_INK}">4</text>
+          <text x="375" y="174" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="${C_MUTED}">6</text>
+
+          ${isRevealed ? `
+            <polygon points="75,45 275,155 75,155" fill="var(--primary-container)" opacity="0.55"/>
+            <polygon points="275,155 375,210 375,155" fill="var(--error-container)" opacity="0.85"/>
+            <text x="142" y="128" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_BLUE}">+40 m</text>
+            <text x="342" y="182" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_RED}">−10 m</text>
+          ` : ``}
+
+          <line x1="75" y1="45" x2="375" y2="210" stroke="${C_BLUE}" stroke-width="3.5"/>
+          <circle cx="75" cy="45" r="4.5" fill="${C_BLUE}"/>
+          <circle cx="275" cy="155" r="6" fill="${isRevealed ? C_GREEN : C_RED}" stroke="${C_BG}" stroke-width="2"/>
+          <circle cx="375" cy="210" r="4.5" fill="${C_BLUE}"/>
+
+          ${!isRevealed ? `
+            <rect x="215" y="74" width="160" height="44" fill="${C_BG}" stroke="${C_RED}" stroke-width="1.5"/>
+            <text x="295" y="94" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_RED}">t = 4 s, v = 0</text>
+            <text x="295" y="110" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${C_MUTED}">¿Qué ocurre aquí?</text>
+          ` : `
+            <rect x="200" y="34" width="225" height="58" fill="${C_BG}" stroke="${C_GREEN}" stroke-width="2"/>
+            <text x="312" y="54" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_GREEN}">Pendiente constante: a = −5 m/s²</text>
+            <text x="312" y="72" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" fill="${C_INK}">En t=4 s invierte sentido (no vuelve a x=0)</text>
+          `}
+        </svg>`;
+      }
+
+      if (qId === 8) {
+        return `<svg viewBox="0 0 460 260" role="img" aria-label="Caja empujada con fuerza menor al roce estático máximo y gráfico">
+          ${defs}
+          <!-- Left: Physical box -->
+          <line x1="15" y1="176" x2="215" y2="176" stroke="${C_INK}" stroke-width="2.5"/>
+          <rect x="65" y="106" width="84" height="68" fill="${C_SURF}" stroke="${C_INK}" stroke-width="2.5"/>
+          <text x="107" y="144" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_INK}">10 kg</text>
+          <line x1="150" y1="140" x2="205" y2="140" stroke="${C_BLUE}" stroke-width="3.5" marker-end="url(#arr-blue)"/>
+          <text x="178" y="128" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_BLUE}">F=30 N</text>
+          <text x="110" y="205" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="${C_MUTED}">f_e máx = μ_e·N = 50 N</text>
+          ${isRevealed ? `
+            <line x1="65" y1="168" x2="12" y2="168" stroke="${C_GREEN}" stroke-width="3.5" marker-end="url(#arr-green)"/>
+            <text x="38" y="156" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_GREEN}">f_e=30 N</text>
+          ` : `
+            <text x="38" y="160" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="${C_RED}">f_e = ?</text>
+          `}
+
+          <!-- Right: PAES graph f_roce vs F_aplicada -->
+          <line x1="255" y1="36" x2="255" y2="196" stroke="${C_INK}" stroke-width="2"/>
+          <line x1="255" y1="196" x2="435" y2="196" stroke="${C_INK}" stroke-width="2"/>
+          <text x="255" y="25" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_INK}">f_roce [N]</text>
+          <text x="405" y="214" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_INK}">F [N]</text>
+
+          <line x1="255" y1="66" x2="345" y2="66" stroke="${C_GRID}" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <text x="249" y="70" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="10" fill="${C_MUTED}">50</text>
+          <line x1="345" y1="66" x2="345" y2="196" stroke="${C_GRID}" stroke-width="1.5" stroke-dasharray="3 3"/>
+          <text x="345" y="210" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="${C_MUTED}">50</text>
+
+          <polyline points="255,196 345,66 345,104 425,104" fill="none" stroke="${C_MUTED}" stroke-width="2.5"/>
+          <text x="315" y="56" font-family="IBM Plex Mono, monospace" font-size="10" fill="${C_MUTED}">Umbral</text>
+          ${isRevealed ? `
+            <line x1="255" y1="118" x2="309" y2="118" stroke="${C_GREEN}" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <line x1="309" y1="118" x2="309" y2="196" stroke="${C_GREEN}" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <text x="249" y="122" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="${C_GREEN}">30</text>
+            <text x="309" y="210" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="${C_GREEN}">30</text>
+            <circle cx="309" cy="118" r="6" fill="${C_GREEN}" stroke="${C_BG}" stroke-width="2"/>
+            <text x="342" y="240" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="${C_GREEN}">Zona estática: f_e = F = 30 N</text>
+          ` : `
+            <text x="342" y="240" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="${C_MUTED}">¿En qué punto del gráfico está?</text>
+          `}
+        </svg>`;
+      }
+      return '';
+    }
+
+    function renderAll() {
+      const q = QUESTIONS[state.currentIndex];
+      if (!q) return;
+      ensureQuestionBucket(q.id);
+      const isRevealed = Boolean(state.revealed[q.id]);
+      const selectedOpt = state.selected[q.id];
+      const votesArr = state.votes[q.id];
+      const totalVotes = getTotalVotes(q.id);
+
+      /* Progress */
+      const revealedCount = QUESTIONS.filter(function(item) {
+        return Boolean(state.revealed[item.id]);
+      }).length;
+      const progressEl = document.getElementById('progress-count');
+      if (progressEl) progressEl.textContent = revealedCount + ' / ' + QUESTIONS.length;
+
+      /* Nav Strip */
+      const navStrip = document.getElementById('nav-strip');
+      if (navStrip) {
+        let navHtml = '';
+        QUESTIONS.forEach(function(item, idx) {
+          const activeClass = idx === state.currentIndex ? ' is-active' : '';
+          const itemVotes = getTotalVotes(item.id);
+          const itemRevealed = Boolean(state.revealed[item.id]);
+          const itemSelected = state.selected[item.id] !== undefined;
+          let dotClass = 'status-dot';
+          if (itemRevealed) dotClass += ' is-revealed';
+          else if (itemVotes > 0 || itemSelected) dotClass += ' is-voted';
+
+          const numStr = (idx + 1) < 10 ? '0' + (idx + 1) : String(idx + 1);
+          navHtml += `
+            <button type="button" class="nav-tab${activeClass}" onclick="selectQuestion(${idx})" aria-current="${idx === state.currentIndex ? 'step' : 'false'}">
+              <span class="nav-tab-top">
+                <span>${numStr}</span>
+                <span class="${dotClass}" aria-hidden="true"></span>
+              </span>
+              <span class="nav-tab-label">${item.shortTitle}</span>
+            </button>
+          `;
+        });
+        navStrip.innerHTML = navHtml;
+      }
+
+      /* Question Meta & Text */
+      const qCounter = document.getElementById('q-counter');
+      const qTopic = document.getElementById('q-topic');
+      const qPrompt = document.getElementById('q-prompt');
+      const qVotesLabel = document.getElementById('q-total-votes');
+      if (qCounter) qCounter.textContent = 'PREGUNTA 0' + (state.currentIndex + 1) + ' / 08';
+      if (qTopic) qTopic.textContent = q.topic;
+      if (qPrompt) qPrompt.textContent = q.prompt;
+      if (qVotesLabel) qVotesLabel.textContent = totalVotes + (totalVotes === 1 ? ' voto' : ' votos');
+
+      /* Options */
+      const optionsList = document.getElementById('options-list');
+      if (optionsList) {
+        let optHtml = '';
+        q.options.forEach(function(optText, idx) {
+          const isSelected = selectedOpt === idx;
+          const isCorrect = idx === q.correctIndex;
+          const voteNum = votesArr[idx];
+          const pct = totalVotes > 0 ? Math.round((voteNum / totalVotes) * 100) : 0;
+
+          let rowClass = 'option-row';
+          let statusBadge = '';
+
+          if (isRevealed) {
+            if (isCorrect) {
+              rowClass += ' is-correct';
+              statusBadge = `<span class="option-badge option-badge--ok">✓ Correcta</span>`;
+            } else if (isSelected) {
+              rowClass += ' is-wrong-picked';
+              statusBadge = `<span class="option-badge option-badge--err">✗ Distractor</span>`;
+            } else {
+              rowClass += ' is-dimmed';
+            }
+          } else if (isSelected) {
+            rowClass += ' is-selected';
+          }
+
+          const pctDisplay = totalVotes > 0 ? voteNum + ' (' + pct + '%)' : String(voteNum);
+
+          optHtml += `
+            <div class="${rowClass}" role="radio" aria-checked="${isSelected ? 'true' : 'false'}" tabindex="0" onclick="selectOption(${idx})" onkeydown="handleOptionKey(event, ${idx})">
+              <div class="vote-fill-bar" style="width: ${pct}%;"></div>
+              <span class="option-letter">${LETTERS[idx]}</span>
+              <div class="option-body">${optText}${statusBadge}</div>
+              <div class="vote-stepper" onclick="event.stopPropagation()">
+                <button type="button" class="step-btn" onclick="adjustVote(event, ${idx}, -1)" aria-label="Restar voto a opción ${LETTERS[idx]}">−</button>
+                <span class="vote-count">${pctDisplay}</span>
+                <button type="button" class="step-btn" onclick="adjustVote(event, ${idx}, 1)" aria-label="Sumar voto a opción ${LETTERS[idx]}">+</button>
+              </div>
+            </div>
+          `;
+        });
+        optionsList.innerHTML = optHtml;
+      }
+
+      /* Reveal & Navigation Buttons */
+      const btnReveal = document.getElementById('btn-reveal');
+      const btnPrev = document.getElementById('btn-prev');
+      const btnNext = document.getElementById('btn-next');
+      if (btnReveal) {
+        btnReveal.textContent = isRevealed ? 'Ocultar explicación' : 'Revelar respuesta y trampa';
+      }
+      if (btnPrev) btnPrev.disabled = state.currentIndex === 0;
+      if (btnNext) btnNext.disabled = state.currentIndex === QUESTIONS.length - 1;
+
+      /* Diagram */
+      const diagKicker = document.getElementById('diagram-kicker');
+      const diagStatus = document.getElementById('diagram-status');
+      const diagStage = document.getElementById('diagram-stage');
+      if (diagKicker) {
+        diagKicker.textContent = isRevealed ? 'ANÁLISIS Y VECTORES' : 'ESQUEMA DE SITUACIÓN';
+      }
+      if (diagStatus) {
+        diagStatus.textContent = isRevealed ? 'REVELADO' : 'PENDIENTE DE VOTACIÓN';
+      }
+      if (diagStage) {
+        diagStage.innerHTML = renderDiagramSVG(q.id, isRevealed);
+      }
+
+      /* Diagnosis Stack */
+      const diagContainer = document.getElementById('diagnosis-container');
+      if (diagContainer) {
+        if (!isRevealed) {
+          diagContainer.innerHTML = `
+            <div class="diagnosis-placeholder">
+              <strong>Esperando discusión del curso</strong>
+              Pide a los estudiantes elegir entre A, B, C o D antes de revelar la respuesta física y la trampa intuitiva.
+            </div>
+          `;
+        } else {
+          diagContainer.innerHTML = `
+            <div class="diagnosis-stack">
+              <div class="callout-card callout-card--physics">
+                <h3 class="callout-title callout-title--physics">Respuesta correcta: Opción ${LETTERS[q.correctIndex]} — Explicación física</h3>
+                <p class="callout-text">${q.explanation}</p>
+                <div class="formula-box">${q.formula}</div>
+              </div>
+              <div class="callout-card callout-card--trap">
+                <h3 class="callout-title callout-title--trap">${q.trapTitle}</h3>
+                <p class="callout-text">${q.trap}</p>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      /* Summary Table */
+      const tbody = document.getElementById('summary-tbody');
+      if (tbody) {
+        let rowsHtml = '';
+        QUESTIONS.forEach(function(item, idx) {
+          const itemVotes = getTotalVotes(item.id);
+          const itemRevealed = Boolean(state.revealed[item.id]);
+          const rowCls = idx === state.currentIndex ? 'is-current-row' : '';
+          const statusStr = itemRevealed ? 'Revelada (' + LETTERS[item.correctIndex] + ')' : 'Sin revelar';
+          rowsHtml += `
+            <tr class="${rowCls}">
+              <td class="num-col">0${idx + 1}</td>
+              <td>
+                <button type="button" class="jump-link" onclick="selectQuestion(${idx})">${item.topic}</button>
+              </td>
+              <td>${item.trapTitle.replace('Preconcepción: ', '')}</td>
+              <td class="num-col">${itemVotes}</td>
+              <td class="num-col">${statusStr}</td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = rowsHtml;
+      }
+    }
+
+    function handleOptionKey(event, idx) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        selectOption(idx);
+      }
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+      const key = e.key.toLowerCase();
+      if (key === 'a') selectOption(0);
+      else if (key === 'b') selectOption(1);
+      else if (key === 'c') selectOption(2);
+      else if (key === 'd') selectOption(3);
+      else if (key === '1') adjustVote(null, 0, 1);
+      else if (key === '2') adjustVote(null, 1, 1);
+      else if (key === '3') adjustVote(null, 2, 1);
+      else if (key === '4') adjustVote(null, 3, 1);
+      else if (key === 'r' || (e.code === 'Space' && document.activeElement.tagName !== 'BUTTON')) {
+        e.preventDefault();
+        toggleReveal();
+      } else if (e.key === 'ArrowRight') {
+        stepQuestion(1);
+      } else if (e.key === 'ArrowLeft') {
+        stepQuestion(-1);
+      }
+    });
+
+    async function initApp() {
+      if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === 'function') {
+        try {
+          const saved = await window.notebookAppApi.getAppState();
+          if (saved && typeof saved === 'object') {
+            if (typeof saved.currentIndex === 'number' && saved.currentIndex >= 0 && saved.currentIndex < QUESTIONS.length) {
+              state.currentIndex = saved.currentIndex;
+            }
+            if (typeof saved.xlMode === 'boolean') {
+              state.xlMode = saved.xlMode;
+            }
+            if (saved.selected && typeof saved.selected === 'object') {
+              state.selected = saved.selected;
+            }
+            if (saved.revealed && typeof saved.revealed === 'object') {
+              state.revealed = saved.revealed;
+            }
+            if (saved.votes && typeof saved.votes === 'object') {
+              state.votes = saved.votes;
+            }
+          }
+        } catch (err) {
+          /* fallback to clean initial state */
+        }
+      }
+
+      applyXlMode();
+      renderAll();
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === 'function') {
+        window.notebookAppApi.notifyAppReady();
+      }
+    }
+
+    initApp();
+  </script>
+</body>
+</html>
